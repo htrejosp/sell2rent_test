@@ -1,3 +1,10 @@
+<?php
+if (!is_writable(session_save_path())) {
+    echo 'Session path "'.session_save_path().'" is not writable for PHP!'; 
+}
+session_start();
+$idsession = session_id();
+?>
 <html>
     <head>
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
@@ -40,22 +47,47 @@
     </script>
     </head>
 <body>
+  <?php
+  $id=0;
+  $firstName="";
+  $lastName="";
+  $action="add";
+  $readonly="";
+  $label_button="Add User";
+  if(@$_REQUEST["id"] && @$_REQUEST["action"]=="edit"&& $_SESSION["data"][$_REQUEST["id"]]){
+      $action="edit";
+      $readonly="";
+      $label_button="Edit User";
+      $id=$_REQUEST["id"];
+      $firstName=$_SESSION["data"][$id]["firstName"];
+      $lastName=$_SESSION["data"][$id]["lastName"];
+  }
+  if(@$_REQUEST["id"] && @$_REQUEST["action"]=="delete"&& $_SESSION["data"][$_REQUEST["id"]]){
+    $action="delete";
+    $readonly="readonly";
+    $label_button="Delete User";
+    $id=$_REQUEST["id"];
+    $firstName=$_SESSION["data"][$id]["firstName"];
+    $lastName=$_SESSION["data"][$id]["lastName"];
+
+  }
+  ?>
 <section class="pb-4">
   <div class="bg-white border rounded-5">
     <section class="w-100 p-4 pb-4">
       <form class="row g-3 needs-validation" novalidate="" id="form">
         <div class="col-md-4">
           <div class="form-outline">
-            <input type="hidden" name="action" id="action" value="add" required="">
-            <input type="hidden" name="currid" id="id" value="" required="">
-            <input type="text" class="form-control active" id="firstName" name="firstName"  value="" required="">
+            <input type="hidden" name="action" id="action" value="<?php echo($action); ?>" required="">
+            <input type="hidden" name="id" id="id" value="<?php echo($id); ?>" required="" >
+            <input type="text" class="form-control active" id="firstName" name="firstName"  value="<?php echo($firstName);?>" <?php echo($readonly);?> required="" >
             <label for="firstName" class="form-label" style="margin-left: 0px;">First name</label>
             <div class="valid-feedback">Looks good!</div>
           <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 68.8px;"></div><div class="form-notch-trailing"></div></div></div>
         </div>
         <div class="col-md-4">
           <div class="form-outline">
-            <input type="text" class="form-control active" id="lastName" name="lastName" value="" required="">
+            <input type="text" class="form-control active" id="lastName" name="lastName" value="<?php echo($lastName);?>" <?php echo($readonly);?> required="">
             <label for="lastName" class="form-label" style="margin-left: 0px;">Last name</label>
             <div class="valid-feedback">Looks good!</div>
           <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 68px;"></div><div class="form-notch-trailing"></div></div></div>
@@ -68,7 +100,7 @@
           <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 68px;"></div><div class="form-notch-trailing"></div></div></div>
         </div>
         <div class="col-12">
-          <button class="btn btn-primary" type="button" id="submit">Submit</button>
+          <button class="btn btn-primary" type="button" id="submit"><?php echo($label_button); ?></button>
         </div>
       </form>
     </section>
